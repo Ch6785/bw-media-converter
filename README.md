@@ -15,7 +15,7 @@ B&W Media Converter is a web-based application developed using Python and Flask 
 
 ## 4. Live Link
 
-Coming Soon — Deployment in Progress.
+http://127.0.0.1:5000/
 
 ## 5. Screenshot of the Interface
 
