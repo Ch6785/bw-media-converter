@@ -6,7 +6,6 @@
 
 ## 2. Description
 
-## 2. Description
 
 B&W Media Converter is a web-based application developed using Python and Flask to process images and videos through grayscale conversion and compression. It allows users to analyze file-size differences and download or email the processed media.
 
@@ -26,3 +25,16 @@ Coming Soon — Deployment in Progress.
 
 ### Results Page
 ![Result page](image-3.png)
+## Screenshot of the Interface
+
+### Methodology
+![Methodology](screenshots/methodology.png)
+
+### Input and Output
+![Input and Output](screenshots/input-output.png)
+
+### Input
+![Input](screenshots/input.png)
+
+### Output
+![Output](screenshots/output.png)
