@@ -1,10 +1,10 @@
-
 from flask import Flask, render_template, request, send_file
 from dotenv import load_dotenv
 from email.message import EmailMessage
 import cv2
 import numpy as np
 import os
+import shutil
 import subprocess
 import tempfile
 import uuid
@@ -23,12 +23,30 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 ALLOWED_IMAGES = {"png", "jpg", "jpeg", "bmp", "webp"}
 ALLOWED_VIDEOS = {"mp4", "mov", "avi", "mkv", "webm", "m4v"}
 
-FFMPEG = (
-    r"C:\Users\chari\AppData\Local\Microsoft\WinGet\Packages"
-    r"\Gyan.FFmpeg.Essentials_Microsoft.Winget.Source_8wekyb3d8bbwe"
-    r"\ffmpeg-9.0.1-essentials_build\bin\ffmpeg.exe"
-)
-FFPROBE = os.path.join(os.path.dirname(FFMPEG), "ffprobe.exe")
+# -------------------- DYNAMIC FFMPEG RESOLUTION --------------------
+def get_binary_path(binary_name):
+    # 1. Check system PATH first (Linux server / Render / Docker / System PATH)
+    system_path = shutil.which(binary_name)
+    if system_path:
+        return system_path
+
+    # 2. Local Windows fallback path
+    win_ffmpeg = (
+        r"C:\Users\chari\AppData\Local\Microsoft\WinGet\Packages"
+        r"\Gyan.FFmpeg.Essentials_Microsoft.Winget.Source_8wekyb3d8bbwe"
+        r"\ffmpeg-9.0.1-essentials_build\bin\ffmpeg.exe"
+    )
+    win_ffprobe = os.path.join(os.path.dirname(win_ffmpeg), "ffprobe.exe")
+
+    if binary_name.startswith("ffmpeg") and os.path.isfile(win_ffmpeg):
+        return win_ffmpeg
+    elif binary_name.startswith("ffprobe") and os.path.isfile(win_ffprobe):
+        return win_ffprobe
+
+    return binary_name
+
+FFMPEG = get_binary_path("ffmpeg")
+FFPROBE = get_binary_path("ffprobe")
 
 
 # -------------------- HELPER FUNCTIONS --------------------
@@ -309,9 +327,9 @@ def convert():
             if operation not in ("video_grayscale", "video_compress"):
                 raise ValueError("Choose a valid video operation.")
 
-            if not os.path.isfile(FFMPEG) or not os.path.isfile(FFPROBE):
+            if not shutil.which(FFMPEG) and not os.path.isfile(FFMPEG):
                 raise ValueError(
-                    "FFmpeg or FFprobe was not found. Check its configured path."
+                    "FFmpeg was not found on the server. Check path settings."
                 )
 
             suffix = (
@@ -419,10 +437,9 @@ def send_email():
     if not sender or not app_password:
         return render_template(
             "error.html",
-            error="Email settings are missing. Check your .env file."
+            error="Email settings are missing. Check environment variables."
         ), 500
 
-    # Keep attachment size modest to allow for email encoding overhead.
     if os.path.getsize(path) > 18 * 1024 * 1024:
         return render_template(
             "error.html",
@@ -484,9 +501,7 @@ def send_email():
         return render_template(
             "error.html",
             error=(
-                "Email could not be sent. Check your account's SMTP "
-                "access and app password. See the VS Code terminal "
-                "for the technical error."
+                "Email could not be sent. Check SMTP access and app password."
             )
         ), 500
 
@@ -500,4 +515,6 @@ def send_email():
 # -------------------- START APP --------------------
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    debug_mode = os.environ.get("FLASK_ENV") == "development"
+    app.run(host="0.0.0.0", port=port, debug=debug_mode)
