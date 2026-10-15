@@ -1,0 +1,22 @@
+# Environment variables and secrets
+.env
+.env.*
+
+# Python virtual environments
+.venv/
+.venv312/
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Generated conversion files
+outputs/
+
+# IDE and operating system files
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B&W Media Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+    <div class="logo">B&W<span>.</span></div>
+    <nav>MEDIA TOOLS / 001</nav>
+</header>
+
+<main>
+    <p class="eyebrow">B&W MEDIA CONVERTER</p>
+    <h1>Convert your media<br>to <span>black and white.</span></h1>
+
+    <p class="intro">
+        Convert images and videos to grayscale or reduce their file sizes.
+    </p>
+
+    <section class="converter">
+        <h2>Media Tools</h2>
+        <p>Choose one file and select an operation.</p>
+
+        <div class="upload-area">
+            <div class="upload-icon">↥</div>
+            <strong>Choose your media file</strong>
+            <small>Images: JPG, PNG, WebP, BMP. Videos: MP4, MOV, AVI, MKV, WebM, M4V.</small>
+
+            <form action="/convert" method="POST" enctype="multipart/form-data">
+                <label for="media_type">Media type</label>
+                <select id="media_type" name="media_type">
+                    <option value="image">Image</option>
+                    <option value="video">Video</option>
+                </select>
+
+                <label for="operation">Choose operation</label>
+                <select id="operation" name="operation">
+                    <option value="grayscale">Convert Image to Black & White</option>
+                    <option value="compress">Reduce Image File Size</option>
+                    <option value="video_grayscale">Convert Video to Black & White</option>
+                    <option value="video_compress">Reduce Video File Size</option>
+                </select>
+
+                <div id="compression-options" hidden>
+                    <label for="reduction">Target file-size reduction</label>
+                    <select id="reduction" name="reduction">
+                        <option value="25">25% reduction</option>
+                        <option value="50" selected>50% reduction</option>
+                        <option value="75">75% reduction</option>
+                    </select>
+                    <small>These are targets; actual reductions may vary.</small>
+                </div>
+
+                <div id="image-options">
+                    <label for="output_format">Image output format</label>
+                    <select id="output_format" name="output_format">
+                        <option value="original">Keep original format</option>
+                        <option value="jpeg">JPEG</option>
+                        <option value="png">PNG</option>
+                        <option value="webp">WebP</option>
+                    </select>
+
+                    <label for="priority">Compression preference</label>
+                    <select id="priority" name="priority">
+                        <option value="quality">Prioritize image quality</option>
+                        <option value="balanced" selected>Balance size and quality</option>
+                        <option value="size">Prioritize smaller file size</option>
+                    </select>
+                </div>
+
+                <label for="media">Select one file</label>
+                <input type="file" id="media" name="media"
+                       accept="image/png,image/jpeg,image/webp,image/bmp" required>
+
+                <small id="file-help">Choose one image to get started.</small>
+                <button type="submit">Process File</button>
+            </form>
+
+            <span class="status">IMAGE + VIDEO TOOLS</span>
+        </div>
+    </section>
+
+    <section class="ad-banner">
+        <div>
+            <div class="ad-label">ADVERTISEMENT</div>
+            <strong>Advertisement space</strong>
+            <p>This banner is reserved for an advertisement.</p>
+        </div>
+        <span>↗</span>
+    </section>
+</main>
+
+<footer>
+    <span>B&W MEDIA CONVERTER</span>
+    <span>Image and video processing</span>
+</footer>
+
+<script>
+    const mediaType = document.getElementById("media_type");
+    const operation = document.getElementById("operation");
+    const reductionOptions = document.getElementById("compression-options");
+    const imageOptions = document.getElementById("image-options");
+    const fileInput = document.getElementById("media");
+    const fileHelp = document.getElementById("file-help");
+
+    function updateOptions() {
+        const isVideo = mediaType.value === "video";
+
+        const allowed = isVideo
+            ? ["video_grayscale", "video_compress"]
+            : ["grayscale", "compress"];
+
+        if (!allowed.includes(operation.value)) {
+            operation.value = allowed[0];
+        }
+
+        Array.from(operation.options).forEach(option => {
+            option.hidden = !allowed.includes(option.value);
+        });
+
+        reductionOptions.hidden =
+            !["compress", "video_compress"].includes(operation.value);
+
+        imageOptions.hidden = isVideo || operation.value !== "compress";
+
+        fileInput.accept = isVideo
+            ? "video/mp4,video/quicktime,video/x-msvideo,video/x-matroska,video/webm,video/x-m4v"
+            : "image/png,image/jpeg,image/webp,image/bmp";
+
+        fileHelp.textContent = isVideo
+            ? "Choose one video. Processing may take some time."
+            : "Choose one image to process.";
+    }
+
+    mediaType.addEventListener("change", updateOptions);
+    operation.addEventListener("change", updateOptions);
+    updateOptions();
+</script>
+</body>
+</html>

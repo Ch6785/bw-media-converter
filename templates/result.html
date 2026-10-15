@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ready to Download | B&W Media Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="result-page">
+
+    <header>
+        <div class="logo">B&W <span>MEDIA CONVERTER</span></div>
+        <nav>YOUR WORKSPACE</nav>
+    </header>
+
+    <main class="result-main">
+        <div class="result-heading">
+            <p class="eyebrow">PROCESSING COMPLETE</p>
+            <h1>Looks good<span>.</span></h1>
+            <p class="intro">
+                Your file is ready. Download your result or send it straight to your inbox.
+            </p>
+        </div>
+
+        <section class="result-card">
+            <div class="result-card-top">
+                <div class="success-icon">✓</div>
+                <div>
+                    <p class="result-label">STATUS</p>
+                    <h2>Conversion successful</h2>
+                    <p class="result-muted">Your processed file is ready to go.</p>
+                </div>
+                <span class="ready-badge">READY</span>
+            </div>
+
+            <div class="result-divider"></div>
+
+            <div class="result-download-section">
+                <div>
+                    <p class="result-label">YOUR OUTPUT</p>
+                    <h3>Processed media file</h3>
+                    <p class="result-muted">Save a copy to your device.</p>
+                </div>
+
+                <a class="result-download"
+                   href="{{ url_for('download', path=result.output_path) }}">
+                    Download file <span>↗</span>
+                </a>
+            </div>
+
+            <div class="result-divider"></div>
+
+            <div class="email-heading">
+                <div class="email-icon">✉</div>
+                <div>
+                    <h2>Send it to your inbox</h2>
+                    <p class="result-muted">
+                        Prefer email? Send the processed file directly.
+                    </p>
+                </div>
+            </div>
+
+            <form class="result-email-form"
+                  action="{{ url_for('send_email') }}"
+                  method="POST">
+
+                <input type="hidden"
+                       name="output_path"
+                       value="{{ result.output_path }}">
+
+                <label for="recipient">Email address</label>
+
+                <input type="email"
+                       id="recipient"
+                       name="recipient"
+                       placeholder="you@example.com"
+                       autocomplete="email"
+                       required>
+
+                <button type="submit">
+                    Send to email <span>→</span>
+                </button>
+            </form>
+        </section>
+
+        <a class="back-link" href="/">
+            <span>←</span> Convert another file
+        </a>
+
+        <p class="result-footnote">
+            YOUR FILE. YOUR FORMAT. YOUR CONTROL.
+        </p>
+    </main>
+
+    <footer>
+        <span>B&W MEDIA CONVERTER</span>
+        <span>Simple. Clean. Efficient.</span>
+    </footer>
+
+</body>
+</html>
